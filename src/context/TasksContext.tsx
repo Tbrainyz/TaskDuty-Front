@@ -9,6 +9,12 @@ import api from "../api/axios";
 import type { Task, CreateTaskPayload, UpdateTaskPayload } from "../types/task";
 
 // ── Types ────────────────────────────────────────────────────
+type GetTasksResponse = {
+  success: boolean;
+  count: number;
+  data: Task[];
+};
+
 interface TasksContextValue {
   tasks: Task[];
   loading: boolean;
@@ -35,39 +41,36 @@ const TasksProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // GET all tasks
+  // GET ALL TASKS
   const getAllTasks = useCallback(async () => {
     setLoading(true);
     setError(null);
+
     try {
-      const { data } = await api.get<Task[]>("/tasks");
-      setTasks(data);
+      const { data } = await api.get<GetTasksResponse>("/tasks");
+
+      setTasks(Array.isArray(data.data) ? data.data : []);
     } catch (err: unknown) {
-      const msg =
-        err instanceof Error ? err.message : "Failed to fetch tasks";
-      setError(msg);
+      setError(err instanceof Error ? err.message : "Failed to fetch tasks");
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // POST create task
-  const createTask = async (payload: CreateTaskPayload): Promise<void> => {
+  // CREATE TASK
+  const createTask = async (payload: CreateTaskPayload) => {
     const { data } = await api.post<Task>("/tasks", payload);
     setTasks((prev) => [data, ...prev]);
   };
 
-  // PUT update task
-  const updateTask = async (
-    id: string,
-    payload: UpdateTaskPayload
-  ): Promise<void> => {
+  // UPDATE TASK
+  const updateTask = async (id: string, payload: UpdateTaskPayload) => {
     const { data } = await api.put<Task>(`/tasks/${id}`, payload);
     setTasks((prev) => prev.map((t) => (t._id === id ? data : t)));
   };
 
-  // DELETE task
-  const deleteTask = async (id: string): Promise<void> => {
+  // DELETE TASK
+  const deleteTask = async (id: string) => {
     await api.delete(`/tasks/${id}`);
     setTasks((prev) => prev.filter((t) => t._id !== id));
   };
