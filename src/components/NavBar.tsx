@@ -8,23 +8,10 @@ interface NavBarProps {
   variant?: NavVariant;
 }
 
-const navLinkStyle: React.CSSProperties = {
-  textDecoration: "none",
-  fontFamily: "Montserrat, sans-serif",
-  fontWeight: 600,
-  fontSize: 18,
-  color: "#000",
-};
-
 const NavBar = ({ variant = "cover" }: NavBarProps) => {
   return (
     <div
       style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 999,
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
@@ -36,7 +23,14 @@ const NavBar = ({ variant = "cover" }: NavBarProps) => {
       {/* Logo */}
       <Link to="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
         <img src={logo} alt="TaskDuty logo" style={{ width: 28, height: 28 }} />
-        <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 24, color: "#2D0050" }}>
+        <span
+          style={{
+            fontFamily: "Montserrat, sans-serif",
+            fontWeight: 700,
+            fontSize: 24,
+            color: "#2D0050",
+          }}
+        >
           TaskDuty
         </span>
       </Link>
@@ -55,10 +49,22 @@ const NavBar = ({ variant = "cover" }: NavBarProps) => {
         {variant === "form" && (
           <Link to="/alltasks" style={navLinkStyle}>All Task</Link>
         )}
-        <img src={avatar} alt="Profile" style={{ width: 42, height: 42, borderRadius: "50%", cursor: "pointer" }} />
+        <img
+          src={avatar}
+          alt="Profile"
+          style={{ width: 42, height: 42, borderRadius: "50%", cursor: "pointer" }}
+        />
       </div>
     </div>
   );
+};
+
+const navLinkStyle: React.CSSProperties = {
+  textDecoration: "none",
+  fontFamily: "Montserrat, sans-serif",
+  fontWeight: 600,
+  fontSize: 18,
+  color: "#000",
 };
 
 export default NavBar;

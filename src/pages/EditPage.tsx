@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import NavBar from "../components/NavBar";
@@ -10,9 +10,12 @@ const CATEGORIES: Category[] = ["Work", "Personal", "Urgent"];
 
 type FormErrors = { title?: string; description?: string; dueDate?: string };
 
-const ChevronDown = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M4 6.5L9 11.5L14 6.5" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+const ChevronDown = ({ open }: { open: boolean }) => (
+  <svg
+    width="20" height="20" viewBox="0 0 20 20" fill="none"
+    style={{ transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "rotate(0deg)", flexShrink: 0 }}
+  >
+    <path d="M5 7.5L10 12.5L15 7.5" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
@@ -26,9 +29,21 @@ const EditPage = () => {
   const [dueDate, setDueDate] = useState("");
   const [category, setCategory] = useState<Category>("Urgent");
   const [completed, setCompleted] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [ready, setReady] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   useEffect(() => {
     if (loading) return;
@@ -56,13 +71,7 @@ const EditPage = () => {
     if (!validate() || !id) return;
     setSubmitting(true);
     try {
-      await updateTask(id, {
-        title,
-        description,
-        dueDate: new Date(dueDate).toISOString(),
-        category,
-        completed,
-      });
+      await updateTask(id, { title, description, dueDate: new Date(dueDate).toISOString(), category, completed });
       toast.success("Task updated successfully");
       navigate("/alltasks");
     } catch {
@@ -110,36 +119,18 @@ const EditPage = () => {
           <button
             onClick={() => navigate(-1)}
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              background: "none",
-              border: "none",
-              fontFamily: "Montserrat, sans-serif",
-              fontWeight: 700,
-              fontSize: 22,
-              color: "#1f2937",
-              cursor: "pointer",
-              marginBottom: 28,
-              padding: 0,
+              display: "flex", alignItems: "center", gap: 8,
+              background: "none", border: "none",
+              fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 22,
+              color: "#1f2937", cursor: "pointer", marginBottom: 32, padding: 0,
             }}
           >
             <span style={{ fontSize: 24, lineHeight: 1, marginTop: -2 }}>←</span>
             Edit Task
           </button>
 
-          {/* White card */}
-          <div
-            style={{
-              backgroundColor: "white",
-              border: "1px solid #e5e7eb",
-              borderRadius: 12,
-              padding: "32px 36px 40px",
-              display: "flex",
-              flexDirection: "column",
-              gap: 22,
-            }}
-          >
+          <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+
             {/* Task Title */}
             <div className="fl-wrap">
               <label>Task Title</label>
@@ -177,47 +168,40 @@ const EditPage = () => {
               {errors.dueDate && <p style={{ color: "#ef4444", fontSize: 12, marginTop: 4 }}>{errors.dueDate}</p>}
             </div>
 
-            {/* Tags */}
-            <div>
-              <p style={{ fontSize: 12, color: "#9ca3af", marginBottom: 8, fontFamily: "Montserrat, sans-serif" }}>
-                Tags
-              </p>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  border: "1px solid #d1d5db",
-                  borderRadius: 6,
-                  padding: "10px 14px",
-                  backgroundColor: "white",
-                }}
-              >
+            {/* Tags — working dropdown */}
+            <div className="fl-tags-wrap" ref={dropdownRef}>
+              <label>Tags</label>
+              <div className="tags-box" onClick={() => setDropdownOpen((o) => !o)}>
                 <div style={{ display: "flex", gap: 8 }}>
+                  <span style={{
+                    backgroundColor: "#e9e4f8",
+                    color: "#7c3aed",
+                    fontFamily: "Montserrat, sans-serif",
+                    fontWeight: 600,
+                    fontSize: 12,
+                    padding: "3px 12px",
+                    borderRadius: 4,
+                  }}>
+                    {category}
+                  </span>
+                </div>
+                <ChevronDown open={dropdownOpen} />
+              </div>
+
+              {dropdownOpen && (
+                <div className="dropdown">
                   {CATEGORIES.map((c) => (
                     <button
                       key={c}
                       type="button"
-                      onClick={() => setCategory(c)}
-                      style={{
-                        fontFamily: "Montserrat, sans-serif",
-                        fontWeight: 700,
-                        fontSize: 13,
-                        padding: "6px 18px",
-                        borderRadius: 6,
-                        cursor: "pointer",
-                        border: "none",
-                        backgroundColor: category === c ? "#7c3aed" : "#f3f4f6",
-                        color: category === c ? "white" : "#6b7280",
-                        transition: "all 0.15s",
-                      }}
+                      className={category === c ? "active" : ""}
+                      onClick={() => { setCategory(c); setDropdownOpen(false); }}
                     >
                       {c}
                     </button>
                   ))}
                 </div>
-                <ChevronDown />
-              </div>
+              )}
             </div>
 
             {/* Completed toggle */}
@@ -249,6 +233,7 @@ const EditPage = () => {
                 borderRadius: 8,
                 border: "none",
                 cursor: submitting ? "not-allowed" : "pointer",
+                marginTop: 4,
               }}
             >
               {submitting ? "Saving..." : "Done"}
@@ -256,18 +241,10 @@ const EditPage = () => {
           </div>
 
           {/* Back to Top */}
-          <div style={{ textAlign: "center", marginTop: 20 }}>
+          <div style={{ textAlign: "center", marginTop: 24 }}>
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              style={{
-                background: "none",
-                border: "none",
-                color: "#7c3aed",
-                fontFamily: "Montserrat, sans-serif",
-                fontWeight: 600,
-                fontSize: 14,
-                cursor: "pointer",
-              }}
+              style={{ background: "none", border: "none", color: "#7c3aed", fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: 14, cursor: "pointer" }}
             >
               Back To Top
             </button>
