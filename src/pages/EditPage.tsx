@@ -10,6 +10,12 @@ const CATEGORIES: Category[] = ["Work", "Personal", "Urgent"];
 
 type FormErrors = { title?: string; description?: string; dueDate?: string };
 
+const ChevronDown = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 6.5L9 11.5L14 6.5" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 const EditPage = () => {
   const { id } = useParams<{ id: string }>();
   const { tasks, loading, updateTask } = useTasks();
@@ -51,9 +57,11 @@ const EditPage = () => {
     setSubmitting(true);
     try {
       await updateTask(id, {
-        title, description,
+        title,
+        description,
         dueDate: new Date(dueDate).toISOString(),
-        category, completed,
+        category,
+        completed,
       });
       toast.success("Task updated successfully");
       navigate("/alltasks");
@@ -68,8 +76,10 @@ const EditPage = () => {
     return (
       <div style={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
         <NavBar variant="form" />
-        <div style={{ padding: "32px 80px" }}>
-          <SkeletonCard />
+        <div style={{ paddingTop: 64 }}>
+          <div style={{ margin: "0 auto", padding: "40px 15%" }}>
+            <SkeletonCard />
+          </div>
         </div>
       </div>
     );
@@ -80,34 +90,29 @@ const EditPage = () => {
     return (
       <div style={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
         <NavBar variant="form" />
-        <div style={{ padding: "32px 80px" }}>
-          <p style={{ color: "#ef4444" }}>Task not found.</p>
+        <div style={{ paddingTop: 64 }}>
+          <div style={{ padding: "40px 15%" }}>
+            <p style={{ color: "#ef4444", fontFamily: "Montserrat, sans-serif" }}>Task not found.</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#2d2d2d" }}>
-      {/* Dark title bar */}
-      <div style={{ backgroundColor: "#2d2d2d", padding: "12px 80px 10px" }}>
-        <p style={{ color: "white", fontSize: 13, fontWeight: 600, margin: 0, fontFamily: "Montserrat, sans-serif" }}>
-          Edit Task
-        </p>
-      </div>
+    <div style={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
+      <NavBar variant="form" />
 
-      {/* Light content area */}
-      <div style={{ backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
-        <NavBar variant="form" />
+      <div style={{ paddingTop: 64 }}>
+        <div style={{ margin: "0 auto", padding: "40px 15%" }}>
 
-        <div style={{ maxWidth: 600, margin: "0 auto", padding: "40px 24px" }}>
-          {/* Back + heading */}
+          {/* ← Back + heading */}
           <button
             onClick={() => navigate(-1)}
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 4,
+              gap: 8,
               background: "none",
               border: "none",
               fontFamily: "Montserrat, sans-serif",
@@ -119,7 +124,8 @@ const EditPage = () => {
               padding: 0,
             }}
           >
-            ‹ Edit Task
+            <span style={{ fontSize: 24, lineHeight: 1, marginTop: -2 }}>←</span>
+            Edit Task
           </button>
 
           {/* White card */}
@@ -128,10 +134,10 @@ const EditPage = () => {
               backgroundColor: "white",
               border: "1px solid #e5e7eb",
               borderRadius: 12,
-              padding: "28px 28px 32px",
+              padding: "32px 36px 40px",
               display: "flex",
               flexDirection: "column",
-              gap: 20,
+              gap: 22,
             }}
           >
             {/* Task Title */}
@@ -196,20 +202,21 @@ const EditPage = () => {
                       style={{
                         fontFamily: "Montserrat, sans-serif",
                         fontWeight: 700,
-                        fontSize: 12,
-                        padding: "5px 14px",
+                        fontSize: 13,
+                        padding: "6px 18px",
                         borderRadius: 6,
                         cursor: "pointer",
                         border: "none",
                         backgroundColor: category === c ? "#7c3aed" : "#f3f4f6",
                         color: category === c ? "white" : "#6b7280",
+                        transition: "all 0.15s",
                       }}
                     >
                       {c}
                     </button>
                   ))}
                 </div>
-                <span style={{ color: "#9ca3af", fontSize: 16 }}>⌄</span>
+                <ChevronDown />
               </div>
             </div>
 

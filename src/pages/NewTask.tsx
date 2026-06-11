@@ -10,6 +10,12 @@ const todayISO = () => new Date().toISOString().split("T")[0];
 
 type FormErrors = { title?: string; description?: string; dueDate?: string };
 
+const ChevronDown = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 6.5L9 11.5L14 6.5" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 const NewTask = () => {
   const { createTask } = useTasks();
   const navigate = useNavigate();
@@ -36,7 +42,8 @@ const NewTask = () => {
     setSubmitting(true);
     try {
       await createTask({
-        title, description,
+        title,
+        description,
         dueDate: new Date(dueDate).toISOString(),
         category,
         completed: false,
@@ -51,26 +58,20 @@ const NewTask = () => {
   };
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#2d2d2d" }}>
-      {/* Dark title bar */}
-      <div style={{ backgroundColor: "#2d2d2d", padding: "12px 80px 10px" }}>
-        <p style={{ color: "white", fontSize: 13, fontWeight: 600, margin: 0, fontFamily: "Montserrat, sans-serif" }}>
-          New Task
-        </p>
-      </div>
+    <div style={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
+      <NavBar variant="form" />
 
-      {/* Light content area */}
-      <div style={{ backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
-        <NavBar variant="form" />
+      {/* Offset for fixed navbar + centered form */}
+      <div style={{ paddingTop: 64 }}>
+        <div style={{ margin: "0 auto", padding: "40px 15%" }}>
 
-        <div style={{ maxWidth: 600, margin: "0 auto", padding: "40px 24px" }}>
-          {/* Back + heading */}
+          {/* ← Back + heading */}
           <button
             onClick={() => navigate(-1)}
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 4,
+              gap: 8,
               background: "none",
               border: "none",
               fontFamily: "Montserrat, sans-serif",
@@ -82,7 +83,8 @@ const NewTask = () => {
               padding: 0,
             }}
           >
-            ‹ New Task
+            <span style={{ fontSize: 24, lineHeight: 1, marginTop: -2 }}>←</span>
+            New Task
           </button>
 
           {/* White card */}
@@ -91,10 +93,10 @@ const NewTask = () => {
               backgroundColor: "white",
               border: "1px solid #e5e7eb",
               borderRadius: 12,
-              padding: "28px 28px 32px",
+              padding: "32px 36px 40px",
               display: "flex",
               flexDirection: "column",
-              gap: 20,
+              gap: 22,
             }}
           >
             {/* Task Title */}
@@ -162,8 +164,8 @@ const NewTask = () => {
                       style={{
                         fontFamily: "Montserrat, sans-serif",
                         fontWeight: 700,
-                        fontSize: 12,
-                        padding: "5px 14px",
+                        fontSize: 13,
+                        padding: "6px 18px",
                         borderRadius: 6,
                         cursor: "pointer",
                         border: "none",
@@ -176,7 +178,7 @@ const NewTask = () => {
                     </button>
                   ))}
                 </div>
-                <span style={{ color: "#9ca3af", fontSize: 16 }}>⌄</span>
+                <ChevronDown />
               </div>
             </div>
 

@@ -56,7 +56,8 @@ const AllTasks = () => {
     <div style={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
       <NavBar variant="tasks" />
 
-      <div style={{ padding: "40px 80px" }}>
+      <div style={{ paddingTop: 64 }}>
+        <div style={{ padding: "40px 80px" }}>
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32 }}>
           <h2
@@ -264,6 +265,7 @@ const AllTasks = () => {
             </button>
           </div>
         )}
+        </div>
       </div>
     </div>
   );

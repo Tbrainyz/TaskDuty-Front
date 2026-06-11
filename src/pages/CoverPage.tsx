@@ -14,7 +14,7 @@ const CoverPage = () => {
           gridTemplateColumns: "1fr 1fr",
           gap: 60,
           alignItems: "center",
-          padding: "64px 80px",
+          paddingTop: 84, paddingBottom: 64, paddingLeft: 80, paddingRight: 80,
         }}
       >
         {/* Left — text */}
