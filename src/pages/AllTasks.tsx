@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import NavBar from "../components/NavBar";
@@ -6,7 +6,7 @@ import SkeletonCard from "../components/SkeletonCard";
 import { useTasks } from "../context/TasksContext";
 import penIcon from "../assets/pen.png";
 import canIcon from "../assets/can.png";
-import type { Category } from "../types/task";
+import type { Category, Task } from "../types/task";
 
 const F = "'Signika Negative', sans-serif";
 
@@ -19,7 +19,7 @@ const categoryStyle: Record<Category, React.CSSProperties> = {
 type StatusFilter   = "All" | "Active" | "Completed";
 type CategoryFilter = "All" | Category;
 
-// ── Reusable dropdown pill ───────────────────────────────────
+// ── Reusable filter dropdown ─────────────────────────────────
 interface FilterDropdownProps {
   label: string;
   value: string;
@@ -52,8 +52,7 @@ const FilterDropdown = ({ label, value, options, onChange }: FilterDropdownProps
           border: isActive ? "1.5px solid #7c3aed" : "1.5px solid #d1d5db",
           backgroundColor: isActive ? "#f5f3ff" : "white",
           color: isActive ? "#7c3aed" : "#374151",
-          transition: "all 0.15s",
-          whiteSpace: "nowrap",
+          transition: "all 0.15s", whiteSpace: "nowrap",
         }}
       >
         <span>{label}: <strong>{value}</strong></span>
@@ -81,10 +80,8 @@ const FilterDropdown = ({ label, value, options, onChange }: FilterDropdownProps
                 fontWeight: opt === value ? 700 : 500,
                 backgroundColor: opt === value ? "#f5f3ff" : "white",
                 color: opt === value ? "#7c3aed" : "#374151",
-                border: "none", cursor: "pointer", transition: "background 0.1s",
+                border: "none", cursor: "pointer",
               }}
-              onMouseEnter={e => { if (opt !== value) (e.target as HTMLButtonElement).style.backgroundColor = "#f9fafb"; }}
-              onMouseLeave={e => { if (opt !== value) (e.target as HTMLButtonElement).style.backgroundColor = "white"; }}
             >
               {opt}
             </button>
@@ -98,22 +95,35 @@ const FilterDropdown = ({ label, value, options, onChange }: FilterDropdownProps
 // ── Main component ───────────────────────────────────────────
 const AllTasks = () => {
   const { tasks, loading, error, getAllTasks, deleteTask } = useTasks();
-  const [deletingId,      setDeletingId]      = useState<string | null>(null);
-  const [categoryFilter,  setCategoryFilter]  = useState<CategoryFilter>("All");
-  const [statusFilter,    setStatusFilter]    = useState<StatusFilter>("All");
 
-  useEffect(() => { getAllTasks(); }, [getAllTasks]);
+  const [deletingId,     setDeletingId]     = useState<string | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("All");
+  const [statusFilter,   setStatusFilter]   = useState<StatusFilter>("All");
+  const [filteredTasks,  setFilteredTasks]  = useState<Task[]>([]);
 
-  // ── Filter logic (pure, no backend call needed) ──────────
-  const filteredTasks = useMemo(() => {
-    return tasks.filter(task => {
-      const matchCategory = categoryFilter === "All" || task.category === categoryFilter;
-      const matchStatus =
-        statusFilter === "All"       ? true :
-        statusFilter === "Active"    ? !task.completed :
-                                        task.completed;
-      return matchCategory && matchStatus;
-    });
+  // ── useEffect 1: fetch all tasks from backend on page load ──
+  useEffect(() => {
+    getAllTasks();
+  }, [getAllTasks]);
+
+  // ── useEffect 2: re-filter whenever tasks or filters change ─
+  useEffect(() => {
+    let result = [...tasks];
+
+    // Filter by category
+    if (categoryFilter !== "All") {
+      result = result.filter(task => task.category === categoryFilter);
+    }
+
+    // Filter by completion status
+    if (statusFilter === "Active") {
+      result = result.filter(task => !task.completed);
+    } else if (statusFilter === "Completed") {
+      result = result.filter(task => task.completed);
+    }
+
+    setFilteredTasks(result);
+
   }, [tasks, categoryFilter, statusFilter]);
 
   const hasActiveFilters = categoryFilter !== "All" || statusFilter !== "All";
@@ -179,8 +189,8 @@ const AllTasks = () => {
 
           {/* ── Filter bar ── */}
           <div style={{
-            display: "flex", alignItems: "center", gap: 12,
-            marginBottom: 28, flexWrap: "wrap",
+            display: "flex", alignItems: "center",
+            gap: 12, marginBottom: 28, flexWrap: "wrap",
           }}>
             <FilterDropdown
               label="Category"
@@ -195,7 +205,7 @@ const AllTasks = () => {
               onChange={v => setStatusFilter(v as StatusFilter)}
             />
 
-            {/* Clear filters */}
+            {/* Clear filters — only shows when a filter is active */}
             {hasActiveFilters && (
               <button
                 onClick={clearFilters}
@@ -203,7 +213,7 @@ const AllTasks = () => {
                   padding: "8px 14px", borderRadius: 8, cursor: "pointer",
                   fontFamily: F, fontWeight: 600, fontSize: 13,
                   border: "1.5px solid #fca5a5", backgroundColor: "#fff5f5",
-                  color: "#ef4444", transition: "all 0.15s",
+                  color: "#ef4444",
                 }}
               >
                 ✕ Clear filters
@@ -212,14 +222,14 @@ const AllTasks = () => {
 
             {/* Result count */}
             <span style={{
-              marginLeft: "auto", fontFamily: F, fontSize: 13,
-              color: "#9ca3af", fontWeight: 500,
+              marginLeft: "auto", fontFamily: F,
+              fontSize: 13, color: "#9ca3af", fontWeight: 500,
             }}>
               {filteredTasks.length} of {tasks.length} task{tasks.length !== 1 ? "s" : ""}
             </span>
           </div>
 
-          {/* ── Empty state ── */}
+          {/* ── Empty state — no tasks at all ── */}
           {tasks.length === 0 ? (
             <div className="task-card" style={{ padding: "64px 32px", textAlign: "center" }}>
               <p style={{ color: "#9ca3af", fontWeight: 600, fontSize: 18, marginBottom: 20, fontFamily: F }}>
@@ -263,7 +273,7 @@ const AllTasks = () => {
                       pointerEvents: deletingId === task._id ? "none" : "auto",
                     }}
                   >
-                    {/* Top row: category + buttons */}
+                    {/* Top row */}
                     <div style={{
                       display: "flex", alignItems: "center",
                       justifyContent: "space-between", padding: "14px 24px",
