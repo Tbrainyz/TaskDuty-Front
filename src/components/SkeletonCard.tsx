@@ -1,23 +1,18 @@
-const SkeletonCard = () => {
-  return (
-    <div className="animate-pulse bg-white rounded border border-gray-100 shadow-[0_4px_4px_rgba(0,0,0,0.1)] px-[35px] pt-[24px] pb-[50px] flex flex-col gap-[35px]">
-      {/* Top */}
-      <div className="flex flex-col gap-3">
-        <div className="w-20 h-4 bg-gray-200 rounded" />
-        <div className="w-48 h-5 bg-gray-200 rounded" />
-        <div className="w-full h-4 bg-gray-200 rounded" />
-        <div className="w-3/4 h-4 bg-gray-200 rounded" />
-      </div>
-      {/* Bottom */}
-      <div className="flex items-center justify-between">
-        <div className="w-[200px] h-8 bg-gray-200 rounded" />
-        <div className="flex gap-3">
-          <div className="w-24 h-10 bg-gray-200 rounded-lg" />
-          <div className="w-24 h-10 bg-gray-200 rounded-lg" />
-        </div>
-      </div>
+const SkeletonCard = () => (
+  <div className="animate-pulse" style={{
+    backgroundColor: "white", borderRadius: 14,
+    border: "1px solid #ede9fe", padding: "20px 24px",
+    display: "flex", flexDirection: "column", gap: 12,
+  }}>
+    <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <div style={{ width: 60, height: 14, backgroundColor: "#e5e7eb", borderRadius: 6 }} />
+      <div style={{ width: 140, height: 32, backgroundColor: "#e5e7eb", borderRadius: 8 }} />
     </div>
-  );
-};
+    <div style={{ height: 1, backgroundColor: "#f3f4f6" }} />
+    <div style={{ width: "60%", height: 18, backgroundColor: "#e5e7eb", borderRadius: 6 }} />
+    <div style={{ width: "100%", height: 14, backgroundColor: "#e5e7eb", borderRadius: 6 }} />
+    <div style={{ width: "80%",  height: 14, backgroundColor: "#e5e7eb", borderRadius: 6 }} />
+  </div>
+);
 
 export default SkeletonCard;

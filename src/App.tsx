@@ -1,13 +1,25 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import CoverPage from "./pages/CoverPage";
-import AllTasks from "./pages/AllTasks";
-import NewTask from "./pages/NewTask";
-import EditPage from "./pages/EditPage";
-import ErrorPage from "./pages/Error";
-import Layout from "./layout/Layout";
+import { useAuth } from "./context/AuthContext";
+import ProtectedRoute from "./layout/ProtectedRoute";
+
+import CoverPage     from "./pages/CoverPage";
+import AllTasks      from "./pages/AllTasks";
+import NewTask       from "./pages/NewTask";
+import EditPage      from "./pages/EditPage";
+import Login         from "./pages/Login";
+import Register      from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import ErrorPage     from "./pages/Error";
+
+// Redirect logged-in users away from auth pages
+const GuestRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuth();
+  return user ? <Navigate to="/alltasks" replace /> : <>{children}</>;
+};
 
 function App() {
   return (
@@ -18,16 +30,24 @@ function App() {
         hideProgressBar
         closeOnClick
         pauseOnHover
-        draggable
         theme="light"
       />
       <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<CoverPage />} />
-          <Route path="/alltasks" element={<AllTasks />} />
-          <Route path="/newtask" element={<NewTask />} />
-          <Route path="/edit/:id" element={<EditPage />} />
-        </Route>
+        {/* Public routes */}
+        <Route path="/" element={<CoverPage />} />
+
+        {/* Guest-only routes (redirect to /alltasks if already logged in) */}
+        <Route path="/login"    element={<GuestRoute><Login /></GuestRoute>} />
+        <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
+        <Route path="/forgot-password"         element={<ForgotPassword />} />
+        <Route path="/reset-password/:token"   element={<ResetPassword />} />
+
+        {/* Protected routes — must be logged in */}
+        <Route path="/alltasks" element={<ProtectedRoute><AllTasks /></ProtectedRoute>} />
+        <Route path="/newtask"  element={<ProtectedRoute><NewTask /></ProtectedRoute>} />
+        <Route path="/edit/:id" element={<ProtectedRoute><EditPage /></ProtectedRoute>} />
+
+        {/* 404 */}
         <Route path="*" element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>

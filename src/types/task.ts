@@ -2,6 +2,7 @@ export type Category = "Work" | "Personal" | "Urgent";
 
 export interface Task {
   _id: string;
+  user: string;
   title: string;
   description: string;
   dueDate: string;
@@ -20,3 +21,10 @@ export type CreateTaskPayload = {
 };
 
 export type UpdateTaskPayload = Partial<CreateTaskPayload>;
+
+export interface AuthUser {
+  _id: string;
+  username: string;
+  email: string;
+  token: string;
+}
