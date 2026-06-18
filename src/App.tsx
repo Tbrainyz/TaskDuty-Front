@@ -5,15 +5,16 @@ import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./layout/ProtectedRoute";
 
-import CoverPage     from "./pages/CoverPage";
-import AllTasks      from "./pages/AllTasks";
-import NewTask       from "./pages/NewTask";
-import EditPage      from "./pages/EditPage";
-import Login         from "./pages/Login";
-import Register      from "./pages/Register";
+import CoverPage      from "./pages/CoverPage";
+import AllTasks       from "./pages/AllTasks";
+import NewTask        from "./pages/NewTask";
+import EditPage       from "./pages/EditPage";
+import Login          from "./pages/Login";
+import Register       from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import ErrorPage     from "./pages/Error";
+import ResetPassword  from "./pages/ResetPassword";
+import Profile        from "./pages/Profile";
+import ErrorPage      from "./pages/Error";
 
 // Redirect logged-in users away from auth pages
 const GuestRoute = ({ children }: { children: React.ReactNode }) => {
@@ -33,19 +34,20 @@ function App() {
         theme="light"
       />
       <Routes>
-        {/* Public routes */}
+        {/* Public */}
         <Route path="/" element={<CoverPage />} />
 
-        {/* Guest-only routes (redirect to /alltasks if already logged in) */}
+        {/* Guest only */}
         <Route path="/login"    element={<GuestRoute><Login /></GuestRoute>} />
         <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
-        <Route path="/forgot-password"         element={<ForgotPassword />} />
-        <Route path="/reset-password/:token"   element={<ResetPassword />} />
+        <Route path="/forgot-password"       element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-        {/* Protected routes — must be logged in */}
+        {/* Protected */}
         <Route path="/alltasks" element={<ProtectedRoute><AllTasks /></ProtectedRoute>} />
         <Route path="/newtask"  element={<ProtectedRoute><NewTask /></ProtectedRoute>} />
         <Route path="/edit/:id" element={<ProtectedRoute><EditPage /></ProtectedRoute>} />
+        <Route path="/profile"  element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
         {/* 404 */}
         <Route path="*" element={<ErrorPage />} />

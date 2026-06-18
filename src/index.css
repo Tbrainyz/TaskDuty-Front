@@ -193,3 +193,10 @@ body {
     gap: 6px !important;
   }
 }
+
+/* ── Auth pages responsive ──────────────────────────────────── */
+@media (max-width: 768px) {
+  .auth-left {
+    display: none !important;
+  }
+}
