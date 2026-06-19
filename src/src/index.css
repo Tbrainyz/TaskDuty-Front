@@ -201,21 +201,23 @@ body {
   }
 }
 
-/* ── Navbar responsive ──────────────────────────────────────── */
-.navbar-mobile-trigger { display: none; }
-.navbar-mobile-panel { display: none; }
+/* ── Navbar responsive ───────────────────────────────────────── */
+.navbar-mobile { position: relative; }
 
 @media (max-width: 768px) {
-  .navbar-bar {
-    padding: 8px 16px !important;
+  .navbar-root {
+    padding: 10px 20px !important;
   }
   .navbar-desktop {
     display: none !important;
   }
-  .navbar-mobile-trigger {
+  .navbar-mobile {
     display: flex !important;
   }
-  .navbar-mobile-panel {
-    display: flex !important;
+}
+
+@media (min-width: 769px) {
+  .navbar-mobile {
+    display: none !important;
   }
 }
