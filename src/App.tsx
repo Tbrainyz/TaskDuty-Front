@@ -15,6 +15,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import VerifyOtp      from "./pages/VerifyOtp";
 import ResetPassword  from "./pages/ResetPassword";
 import Profile        from "./pages/Profile";
+import Trash          from "./pages/Trash";
 import ErrorPage      from "./pages/Error";
 
 const GuestRoute = ({ children }: { children: React.ReactNode }) => {
@@ -42,6 +43,7 @@ function App() {
         <Route path="/newtask"  element={<ProtectedRoute><NewTask /></ProtectedRoute>} />
         <Route path="/edit/:id" element={<ProtectedRoute><EditPage /></ProtectedRoute>} />
         <Route path="/profile"  element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/trash"    element={<ProtectedRoute><Trash /></ProtectedRoute>} />
 
         {/* 404 */}
         <Route path="*" element={<ErrorPage />} />

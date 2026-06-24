@@ -134,13 +134,13 @@ const AllTasks = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this task?")) return;
+    if (!window.confirm("Move this task to trash?")) return;
     setDeletingId(id);
     try {
       await deleteTask(id);
-      toast.success("Task deleted successfully");
+      toast.success("Task moved to trash");
     } catch {
-      toast.error("Failed to delete task");
+      toast.error("Failed to move task to trash");
     } finally {
       setDeletingId(null);
     }
@@ -175,16 +175,36 @@ const AllTasks = () => {
           <div className="tasks-header" style={{
             display: "flex", alignItems: "center",
             justifyContent: "space-between", marginBottom: 20,
+            flexWrap: "wrap", gap: 12,
           }}>
             <h2 style={{ fontFamily: F, fontWeight: 700, fontSize: 30, color: "#0f0f0f", margin: 0 }}>
               My Tasks
             </h2>
-            <Link to="/newtask" style={{
-              textDecoration: "none", fontFamily: F,
-              fontWeight: 600, fontSize: 15, color: "#7c3aed",
-            }}>
-              + Add New Task
-            </Link>
+            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+              {/* Trash button */}
+              <Link to="/trash" style={{
+                textDecoration: "none", fontFamily: F, fontWeight: 600,
+                fontSize: 14, color: "#ef4444",
+                display: "flex", alignItems: "center", gap: 6,
+                backgroundColor: "#fff5f5", border: "1.5px solid #fca5a5",
+                padding: "7px 14px", borderRadius: 8,
+              }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                  <path d="M10 11v6M14 11v6"/>
+                  <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                </svg>
+                Trash
+              </Link>
+              {/* Add New Task */}
+              <Link to="/newtask" style={{
+                textDecoration: "none", fontFamily: F,
+                fontWeight: 600, fontSize: 15, color: "#7c3aed",
+              }}>
+                + Add New Task
+              </Link>
+            </div>
           </div>
 
           {/* ── Filter bar ── */}
@@ -302,7 +322,7 @@ const AllTasks = () => {
                           backgroundColor: "white", cursor: "pointer",
                         }}>
                           <img src={canIcon} alt="" style={{ width: 13, height: 13 }} />
-                          Delete
+                          Trash
                         </button>
                       </div>
                     </div>

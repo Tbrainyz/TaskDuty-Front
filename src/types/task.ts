@@ -8,6 +8,8 @@ export interface Task {
   dueDate: string;
   category: Category;
   completed: boolean;
+  deleted: boolean;
+  deletedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
